@@ -1,5 +1,11 @@
 // @ts-check
+require('dotenv').config();
 import { test, expect } from '@playwright/test';
+
+const username = process.env.TEST_USERNAME;
+const password = process.env.TEST_PASSWORD;
+const url = process.env.TEST_URL;
+
 
 test('has title', async ({ page }) => {
   await page.goto('https://playwright.dev/');
@@ -29,8 +35,12 @@ test('has title for Caf', async ({ page }) => {
 test('get started link for Caf', async ({ page }) => {
   await page.goto('http://127.0.0.1:8000/');
 
-  await page.getByPlaceholder('Username').fill('gofran.khan');
-  await page.getByPlaceholder('Password').fill('123');
+  if (!process.env.TEST_USERNAME || !process.env.TEST_PASSWORD) {
+    throw new Error('Missing TEST_USERNAME or TEST_PASSWORD in environment variables');
+  }
+
+  await page.getByPlaceholder('Username').fill(process.env.TEST_USERNAME);
+  await page.getByPlaceholder('Password').fill(process.env.TEST_PASSWORD);
   // Click the get started link.
   await page.getByRole('button', { name: 'Log in' }).click();
 
