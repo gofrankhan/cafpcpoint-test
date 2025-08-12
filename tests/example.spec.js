@@ -67,9 +67,9 @@ test.only('create a customer', async ({ page }) => {
   await page.click('a.form-control.btn.btn-primary');
   const strTaxID = faker.string.alphanumeric({ length: 16, casing: 'upper' });
   await page.fill('#taxid', strTaxID);
-  //Fill for firstname, lastname, email, phone, address, city, state, zip 
-  await page.fill('#firstname', 'John');
-  await page.fill('#lastname', 'Doe');
+  await page.selectOption('select[name="customertype"]', 'person');
+  await page.fill('#firstname', faker.person.firstName())
+  await page.fill('#lastname', faker.person.lastName());
 
   // Telephone: +02 followed by 8 digits
   const strTelephone = '+02' + faker.string.numeric(8);
@@ -87,11 +87,13 @@ test.only('create a customer', async ({ page }) => {
   await page.fill('#mobile', strMobile);
   await page.fill('#telephone', strTelephone);
   await page.fill('#addressline1', strAddress);
+  await page.fill('#addressline2', faker.location.streetAddress());
   await page.fill('#city', strCity);
   await page.fill('#region', strRegion);
   await page.fill('#postcode', strPostcode);
+  await page.fill('#dateofbirth', faker.date.birthdate({ min: 18, max: 65, mode: 'age' }).toISOString().split('T')[0]);
+  await page.fill('#cityofbirth', faker.location.city());
 
-  //await page.click('#btn_save_customer');
-
+  await page.click('input[value="Save"]');
   await page.waitForTimeout(3000);
 });
