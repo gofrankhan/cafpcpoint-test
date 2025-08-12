@@ -8,33 +8,11 @@ const password = process.env.TEST_PASSWORD;
 const url = process.env.TEST_URL;
 
 
-test('has title', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
-
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Playwright/);
-});
-
-test('get started link', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
-
-  // Click the get started link.
-  await page.getByRole('link', { name: 'Get started' }).click();
-
-  // Expects page to have a heading with the name of Installation.
-  await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
-});
-
-
-test('has title for Caf', async ({ page }) => {
+test('Login to the CAF PC POINT portal', async ({ page }) => {
   await page.goto('http://127.0.0.1:8000/');
 
   // Expect a title "to contain" a substring.
   await expect(page).toHaveTitle(/CAF PC POINT/);
-});
-
-test('get started link for Caf', async ({ page }) => {
-  await page.goto('http://127.0.0.1:8000/');
 
   if (!process.env.TEST_USERNAME || !process.env.TEST_PASSWORD) {
     throw new Error('Missing TEST_USERNAME or TEST_PASSWORD in environment variables');
@@ -49,7 +27,7 @@ test('get started link for Caf', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
 });
 
-test.only('create a customer', async ({ page }) => {
+test('Create a customer without subscriptions', async ({ page }) => {
   await page.goto('http://127.0.0.1:8000/');
 
   if (!process.env.TEST_USERNAME || !process.env.TEST_PASSWORD) {
@@ -95,5 +73,30 @@ test.only('create a customer', async ({ page }) => {
   await page.fill('#cityofbirth', faker.location.city());
 
   await page.click('input[value="Save"]');
+  await page.waitForTimeout(3000);
+});
+
+test.only('delete a customer from the top of the table', async ({ page }) => {
+  await page.goto('http://127.0.0.1:8000/');
+
+  if (!process.env.TEST_USERNAME || !process.env.TEST_PASSWORD) {
+    throw new Error('Missing TEST_USERNAME or TEST_PASSWORD in environment variables');
+  }
+  await page.getByPlaceholder('Username').fill(process.env.TEST_USERNAME);
+  await page.getByPlaceholder('Password').fill(process.env.TEST_PASSWORD);
+  await page.getByRole('button', { name: 'Log in' }).click();
+  await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+  await page.click('#btn_customer_simple');
+
+  // Wait for the table to be visible
+  await page.waitForSelector('table');
+
+  // Accept confirmation dialog automatically
+  page.on('dialog', async dialog => {
+    await dialog.accept();
+  });
+
+  // Click the first row's delete button
+  await page.locator('a.btn.btn-danger.btn-sm.edit[title="Delete"]').first().click();
   await page.waitForTimeout(3000);
 });
