@@ -1,6 +1,7 @@
 // @ts-check
 require('dotenv').config();
 import { test, expect } from '@playwright/test';
+import { faker, es } from '@faker-js/faker';
 
 const username = process.env.TEST_USERNAME;
 const password = process.env.TEST_PASSWORD;
@@ -64,18 +65,31 @@ test.only('create a customer', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
   await page.click('#btn_customer_simple');
   await page.click('a.form-control.btn.btn-primary');
-
-  await page.fill('#taxid', '123456789');
+  const strTaxID = faker.string.alphanumeric({ length: 16, casing: 'upper' });
+  await page.fill('#taxid', strTaxID);
   //Fill for firstname, lastname, email, phone, address, city, state, zip 
   await page.fill('#firstname', 'John');
   await page.fill('#lastname', 'Doe');
-  // await page.fill('#email', 'john.doe@example.com');
-  await page.fill('#mobile', '1234567890');
-  await page.fill('#telephone', '1234567890');
-  await page.fill('#addressline1', '123 Main St');
-  await page.fill('#city', 'Anytown');
-  await page.fill('#region', 'CA');
-  await page.fill('#postcode', '12345');
+
+  // Telephone: +02 followed by 8 digits
+  const strTelephone = '+02' + faker.string.numeric(8);
+
+  // Mobile: +8801 followed by one of 3,5,6,7,8,9, then 8 digits
+  const mobilePrefix = faker.helpers.arrayElement(['3', '5', '6', '7', '8', '9']);
+  const strMobile = `+8801${mobilePrefix}${faker.string.numeric(8)}`;
+  const strCountry = faker.location.country();
+  const strRegion = faker.location.countryCode('alpha-2');
+  const strCity = faker.location.city();
+  const strPostcode = faker.location.zipCode();
+  const strAddress = faker.location.streetAddress();
+
+  await page.fill('#citizenship', strCountry);
+  await page.fill('#mobile', strMobile);
+  await page.fill('#telephone', strTelephone);
+  await page.fill('#addressline1', strAddress);
+  await page.fill('#city', strCity);
+  await page.fill('#region', strRegion);
+  await page.fill('#postcode', strPostcode);
 
   //await page.click('#btn_save_customer');
 
