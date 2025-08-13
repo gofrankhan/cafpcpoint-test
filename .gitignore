@@ -1,6 +1,7 @@
 
 # Playwright\
 .env
+storageState.json
 node_modules/
 /test-results/
 /playwright-report/

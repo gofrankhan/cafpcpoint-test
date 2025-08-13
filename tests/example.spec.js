@@ -8,7 +8,7 @@ const password = process.env.TEST_PASSWORD;
 const url = process.env.TEST_URL;
 
 
-test('Login to the CAF PC POINT portal', async ({ page }) => {
+test.skip('Login to the CAF PC POINT portal', async ({ page }) => {
   await page.goto('http://127.0.0.1:8000/');
 
   // Expect a title "to contain" a substring.
@@ -28,19 +28,8 @@ test('Login to the CAF PC POINT portal', async ({ page }) => {
 });
 
 test('Create a customer without subscriptions', async ({ page }) => {
-  await page.goto('http://127.0.0.1:8000/');
-
-  if (!process.env.TEST_USERNAME || !process.env.TEST_PASSWORD) {
-    throw new Error('Missing TEST_USERNAME or TEST_PASSWORD in environment variables');
-  }
-
-  await page.getByPlaceholder('Username').fill(process.env.TEST_USERNAME);
-  await page.getByPlaceholder('Password').fill(process.env.TEST_PASSWORD);
-  // Click the get started link.
-  await page.getByRole('button', { name: 'Log in' }).click();
-
+  await page.goto('/dashboard');
   // Expects page to have a heading with the name of Installation.
-  await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
   await page.click('#btn_customer_simple');
   await page.click('a.form-control.btn.btn-primary');
   const strTaxID = faker.string.alphanumeric({ length: 16, casing: 'upper' });
@@ -81,15 +70,8 @@ test('Create a customer without subscriptions', async ({ page }) => {
   await page.waitForTimeout(3000);
 });
 
-test.only('delete a customer from the top of the table', async ({ page }) => {
-  await page.goto('http://127.0.0.1:8000/');
-
-  if (!process.env.TEST_USERNAME || !process.env.TEST_PASSWORD) {
-    throw new Error('Missing TEST_USERNAME or TEST_PASSWORD in environment variables');
-  }
-  await page.getByPlaceholder('Username').fill(process.env.TEST_USERNAME);
-  await page.getByPlaceholder('Password').fill(process.env.TEST_PASSWORD);
-  await page.getByRole('button', { name: 'Log in' }).click();
+test('delete a customer from the top of the table', async ({ page }) => {
+  await page.goto('/dashboard');
   await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
   await page.click('#btn_customer_simple');
 

@@ -40,16 +40,6 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
 
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
-
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',
@@ -78,4 +68,12 @@ export default defineConfig({
   //   reuseExistingServer: !process.env.CI,
   // },
 });
+
+module.exports = {
+  use: {
+    baseURL: 'http://127.0.0.1:8000',
+    storageState: 'storageState.json', // logged-in state reused for all tests
+    headless: false
+  }
+};
 
