@@ -27,7 +27,7 @@ test('Login to the CAF PC POINT portal', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
 });
 
-test.only('Create a customer without subscriptions', async ({ page }) => {
+test('Create a customer without subscriptions', async ({ page }) => {
   await page.goto('http://127.0.0.1:8000/');
 
   if (!process.env.TEST_USERNAME || !process.env.TEST_PASSWORD) {
@@ -81,7 +81,7 @@ test.only('Create a customer without subscriptions', async ({ page }) => {
   await page.waitForTimeout(3000);
 });
 
-test('delete a customer from the top of the table', async ({ page }) => {
+test.only('delete a customer from the top of the table', async ({ page }) => {
   await page.goto('http://127.0.0.1:8000/');
 
   if (!process.env.TEST_USERNAME || !process.env.TEST_PASSWORD) {
@@ -96,6 +96,7 @@ test('delete a customer from the top of the table', async ({ page }) => {
   // Wait for the table to be visible
   await page.waitForSelector('table');
 
+  const strTaxID = await page.locator('table tr:nth-of-type(1) td:nth-of-type(3)').innerText();
   // Accept confirmation dialog automatically
   page.on('dialog', async dialog => {
     await dialog.accept();
@@ -103,5 +104,8 @@ test('delete a customer from the top of the table', async ({ page }) => {
 
   // Click the first row's delete button
   await page.locator('a.btn.btn-danger.btn-sm.edit[title="Delete"]').first().click();
+  // Assert that the old TaxID is no longer visible in the table
+  await expect(page.locator(`text=${strTaxID}`)).not.toBeVisible();
+
   await page.waitForTimeout(3000);
 });
