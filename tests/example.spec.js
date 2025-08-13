@@ -27,7 +27,7 @@ test('Login to the CAF PC POINT portal', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
 });
 
-test('Create a customer without subscriptions', async ({ page }) => {
+test.only('Create a customer without subscriptions', async ({ page }) => {
   await page.goto('http://127.0.0.1:8000/');
 
   if (!process.env.TEST_USERNAME || !process.env.TEST_PASSWORD) {
@@ -73,10 +73,15 @@ test('Create a customer without subscriptions', async ({ page }) => {
   await page.fill('#cityofbirth', faker.location.city());
 
   await page.click('input[value="Save"]');
+
+  const toast = page.locator('.toast-message'); // Replace with actual selector
+  await expect(toast).toHaveText('Customer data added successfully');
+  await expect(page.locator('table tr:nth-of-type(1) td:nth-of-type(3)')).toHaveText(strTaxID);
+
   await page.waitForTimeout(3000);
 });
 
-test.only('delete a customer from the top of the table', async ({ page }) => {
+test('delete a customer from the top of the table', async ({ page }) => {
   await page.goto('http://127.0.0.1:8000/');
 
   if (!process.env.TEST_USERNAME || !process.env.TEST_PASSWORD) {
