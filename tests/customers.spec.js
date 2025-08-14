@@ -3,6 +3,7 @@ require('dotenv').config();
 import { test, expect } from '@playwright/test';
 import { faker, es } from '@faker-js/faker';
 import { createCustomer } from '../utils/customer_steps.js';
+const { saveCustomerData, getCustomerData } = require('../utils/dataStore');
 
 const username = process.env.TEST_USERNAME;
 const password = process.env.TEST_PASSWORD;
@@ -28,7 +29,7 @@ test('Login to the CAF PC POINT portal', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
 });
 
-test.only('Create a customer without subscriptions', async ({ page }) => {
+test('Create a customer without subscriptions', async ({ page }) => {
   await page.goto('/dashboard');
   // Expects page to have a heading with the name of Installation.
   await page.click('#btn_customer_simple');
@@ -51,6 +52,7 @@ test.only('Create a customer without subscriptions', async ({ page }) => {
     cityOfBirth: faker.location.city(),
   }
   console.log(customerData);
+  saveCustomerData(customerData); // Save customer data to file
   await createCustomer(page, customerData);
 
   const toast = page.locator('.toast-message'); // Message with actual selector
@@ -70,14 +72,31 @@ test('delete a customer from the top of the table', async ({ page }) => {
 
   const strTaxID = await page.locator('table tr:nth-of-type(1) td:nth-of-type(3)').innerText();
   // Accept confirmation dialog automatically
-  page.on('dialog', async dialog => {
-    await dialog.accept();
-  });
+  page.on('dialog', async dialog => { await dialog.accept(); });
 
   // Click the first row's delete button
   await page.locator('a.btn.btn-danger.btn-sm.edit[title="Delete"]').first().click();
   // Assert that the old TaxID is no longer visible in the table
   await expect(page.locator(`text=${strTaxID}`)).not.toBeVisible();
+
+  await page.waitForTimeout(3000);
+});
+
+test.only('delete a customer by tax id', async ({ page }) => {
+  await page.goto('/dashboard');
+  await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+  await page.click('#btn_customer_simple');
+
+  // Wait for the table to be visible
+  await page.waitForSelector('table');
+  const taxId = getCustomerData().taxId; // Get the tax ID from the saved data
+  const rowLocator = page.locator(`table tr:has-text("${taxId}")`);
+  await expect(rowLocator).toBeVisible();
+  // Accept confirmation dialog automatically
+  page.on('dialog', async dialog => { await dialog.accept(); });
+  await rowLocator.locator('a.btn.btn-danger.btn-sm.edit[title="Delete"]').click();
+  // Assert that the old TaxID is no longer visible in the table
+  await expect(page.locator(`text=${taxId}`)).not.toBeVisible();
 
   await page.waitForTimeout(3000);
 });

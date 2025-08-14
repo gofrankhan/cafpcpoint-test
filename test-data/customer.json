@@ -1,0 +1,18 @@
+{
+    "customerData": {
+        "taxId": "31HW4C3XYAGYMTFL",
+        "customertype": "person",
+        "firstName": "Kiana",
+        "lastName": "West",
+        "citizenship": "Timor-Leste",
+        "telephone": "+0210345271",
+        "mobile": "+8801977035186",
+        "region": "MC",
+        "city": "New Daveville",
+        "postcode": "79674-0961",
+        "addressLine1": "67531 Park Avenue",
+        "addressLine2": "Apt. 951",
+        "dateOfBirth": "1962-10-31",
+        "cityOfBirth": "New Stanfordfurt"
+    }
+}
