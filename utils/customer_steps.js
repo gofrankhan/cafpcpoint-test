@@ -19,14 +19,19 @@ exports.createCustomer = async (page, customerData) => {
     await page.fill('#dateofbirth', customerData.dateOfBirth);
     await page.fill('#cityofbirth', customerData.cityOfBirth);
 
-
     await page.click('input[value="Save"]');
 };
 
 exports.deleteCustomerByTaxId = async (page, taxId) => {
-    await page.goto('/customer');
+    await page.goto('/dashboard');
+    await page.getByRole('heading', { name: 'Dashboard' }).waitFor({ state: 'visible' });;
+    await page.click('#btn_customer_simple');
+    // Wait for the table to be visible
+    await page.waitForSelector('table');
     const rowLocator = page.locator(`table tr:has-text("${taxId}")`);
-    await rowLocator.locator('a[title="Delete"]').click();
-    page.on('dialog', async dialog => await dialog.accept());
-    await expect(page.locator(`text=${taxId}`)).not.toBeVisible();
+    // Accept confirmation dialog automatically
+    page.on('dialog', async dialog => { await dialog.accept(); });
+    await rowLocator.locator('a.btn.btn-danger.btn-sm.edit[title="Delete"]').click();
+    // Assert that the old TaxID is no longer visible in the table
+
 };

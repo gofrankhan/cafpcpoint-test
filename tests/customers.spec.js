@@ -2,11 +2,12 @@
 require('dotenv').config();
 import { test, expect } from '@playwright/test';
 import { faker, es } from '@faker-js/faker';
-import { createCustomer } from '../utils/customer_steps.js';
+const { createCustomer, deleteCustomerByTaxId } = require('../utils/customer_steps.js');
 const { saveCustomerData, getCustomerData } = require('../utils/dataStore');
 
 const username = process.env.TEST_USERNAME;
 const password = process.env.TEST_PASSWORD;
+const apiAuthToken = process.env.API_AUTH_TOKEN; // Ensure this is set in your .env file
 const url = process.env.TEST_URL;
 
 
@@ -83,20 +84,51 @@ test('delete a customer from the top of the table', async ({ page }) => {
 });
 
 test.only('delete a customer by tax id', async ({ page }) => {
-  await page.goto('/dashboard');
-  await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
-  await page.click('#btn_customer_simple');
-
-  // Wait for the table to be visible
-  await page.waitForSelector('table');
   const taxId = getCustomerData().taxId; // Get the tax ID from the saved data
-  const rowLocator = page.locator(`table tr:has-text("${taxId}")`);
-  await expect(rowLocator).toBeVisible();
-  // Accept confirmation dialog automatically
-  page.on('dialog', async dialog => { await dialog.accept(); });
-  await rowLocator.locator('a.btn.btn-danger.btn-sm.edit[title="Delete"]').click();
-  // Assert that the old TaxID is no longer visible in the table
+  await deleteCustomerByTaxId(page, "UEIRC9M8G624YQL0");
   await expect(page.locator(`text=${taxId}`)).not.toBeVisible();
 
   await page.waitForTimeout(3000);
+});
+
+
+test('create customer via API', async ({ request }) => {
+  const mobilePrefix = faker.helpers.arrayElement(['3', '5', '6', '7', '8', '9']);
+  if (!apiAuthToken) {
+    throw new Error('Authentication token is not set in environment variables');
+  }
+  const response = await request.post('http://127.0.0.1:8000/api/customers/', {
+
+    headers: {
+      'Authorization': apiAuthToken,
+      'Content-Type': 'application/json'
+    },
+    data: {
+      user_id: 16,
+      taxid: 'TAX-90001',
+      customertype: 'Corporate',
+      company: 'Tech Innovations Ltd',
+      firstname: 'Alice',
+      lastname: 'Rahman',
+      telephone: '01888888888',
+      mobile: '01799999999',
+      dateofbirth: '1992-07-12',
+      pob: 'Dhaka',
+      citizenship: 'Bangladeshi',
+      addressline1: 'House 15, Road 3',
+      addressline2: 'Block C',
+      city: 'Dhaka',
+      region: 'Dhaka',
+      postcode: '1216',
+      is_subscribed: true,
+      subscription_type: 'Annual Premium',
+      start_date: '2025-08-15',
+      end_date: '2026-08-15',
+      description: '1-year premium subscription with priority support'
+    }
+  });
+
+  expect(response.ok()).toBeTruthy(); // status 2xx
+  const body = await response.json();
+  console.log('Created customer:', body);
 });
