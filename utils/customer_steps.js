@@ -1,3 +1,26 @@
+const { faker } = require('@faker-js/faker');
+
+exports.createCustomerData = () => {
+    const mobilePrefix = faker.helpers.arrayElement(['3', '5', '6', '7', '8', '9']);
+    const customerData = {
+        taxId: faker.string.alphanumeric({ length: 16, casing: 'upper' }),
+        customertype: 'person',
+        firstName: faker.person.firstName(),
+        lastName: faker.person.lastName(),
+        citizenship: faker.location.country(),
+        telephone: '+02' + faker.string.numeric(8),
+        mobile: `+8801${mobilePrefix}${faker.string.numeric(8)}`,
+        region: faker.location.countryCode('alpha-2'),
+        city: faker.location.city(),
+        postcode: faker.location.zipCode(),
+        addressLine1: faker.location.streetAddress(),
+        addressLine2: faker.location.secondaryAddress(),
+        dateOfBirth: faker.date.birthdate({ min: 18, max: 65, mode: 'age' }).toISOString().split('T')[0],
+        cityOfBirth: faker.location.city()
+    }
+    return customerData;
+};
+
 exports.createCustomer = async (page, customerData) => {
     await page.goto('/dashboard');
     // Expects page to have a heading with the name of Installation.

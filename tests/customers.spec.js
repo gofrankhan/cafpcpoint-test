@@ -2,8 +2,8 @@
 require('dotenv').config();
 import { test, expect } from '@playwright/test';
 import { faker, es } from '@faker-js/faker';
-const { createCustomer, deleteCustomerByTaxId } = require('../utils/customer_steps.js');
-const { saveCustomerData, getCustomerData } = require('../utils/dataStore');
+const { createCustomer, createCustomerData, deleteCustomerByTaxId } = require('../utils/customer_steps.js');
+const { saveCustomerData, getCustomerData, } = require('../utils/dataStore');
 
 const username = process.env.TEST_USERNAME;
 const password = process.env.TEST_PASSWORD;
@@ -35,23 +35,8 @@ test('Create a customer without subscriptions', async ({ page }) => {
   // Expects page to have a heading with the name of Installation.
   await page.click('#btn_customer_simple');
   await page.click('a.form-control.btn.btn-primary'); //click on "New" button
-  const mobilePrefix = faker.helpers.arrayElement(['3', '5', '6', '7', '8', '9']);
-  const customerData = {
-    taxId: faker.string.alphanumeric({ length: 16, casing: 'upper' }),
-    customertype: 'person',
-    firstName: faker.person.firstName(),
-    lastName: faker.person.lastName(),
-    citizenship: faker.location.country(),
-    telephone: '+02' + faker.string.numeric(8),
-    mobile: `+8801${mobilePrefix}${faker.string.numeric(8)}`,
-    region: faker.location.countryCode('alpha-2'),
-    city: faker.location.city(),
-    postcode: faker.location.zipCode(),
-    addressLine1: faker.location.streetAddress(),
-    addressLine2: faker.location.secondaryAddress(),
-    dateOfBirth: faker.date.birthdate({ min: 18, max: 65, mode: 'age' }).toISOString().split('T')[0],
-    cityOfBirth: faker.location.city(),
-  }
+
+  const customerData = createCustomerData();
   console.log(customerData);
   saveCustomerData(customerData); // Save customer data to file
   await createCustomer(page, customerData);
@@ -59,6 +44,24 @@ test('Create a customer without subscriptions', async ({ page }) => {
   const toast = page.locator('.toast-message'); // Message with actual selector
   await expect(toast).toHaveText('Customer data added successfully');
   await expect(page.locator('table tr:nth-of-type(1) td:nth-of-type(3)')).toHaveText(customerData.taxId);
+
+  await page.waitForTimeout(3000);
+});
+
+test('Create a customer without tax Id and check error message', async ({ page }) => {
+  await page.goto('/dashboard');
+  // Expects page to have a heading with the name of Installation.
+  await page.click('#btn_customer_simple');
+  await page.click('a.form-control.btn.btn-primary'); //click on "New" button
+
+  const customerData = createCustomerData();
+  customerData.taxId = ''; // Set taxId to empty string to trigger validation error
+  console.log(customerData);
+  saveCustomerData(customerData); // Save customer data to file
+  await createCustomer(page, customerData);
+
+  const toast = page.locator('.toast-message'); // Message with actual selector
+  await expect(toast).toHaveText('Tax ID should not be empty');
 
   await page.waitForTimeout(3000);
 });
@@ -83,51 +86,42 @@ test('delete a customer from the top of the table', async ({ page }) => {
   await page.waitForTimeout(3000);
 });
 
-test.only('delete a customer by tax id', async ({ page }) => {
+test('delete a customer by tax id', async ({ page }) => {
+  const customerData = createCustomerData();
+  saveCustomerData(customerData); // Save customer data to file
+  await createCustomer(page, customerData);
   const taxId = getCustomerData().taxId; // Get the tax ID from the saved data
-  await deleteCustomerByTaxId(page, "UEIRC9M8G624YQL0");
+  await deleteCustomerByTaxId(page, taxId);
   await expect(page.locator(`text=${taxId}`)).not.toBeVisible();
 
   await page.waitForTimeout(3000);
 });
 
 
-test('create customer via API', async ({ request }) => {
-  const mobilePrefix = faker.helpers.arrayElement(['3', '5', '6', '7', '8', '9']);
+test.only('create customer via API', async ({ request }) => {
+
   if (!apiAuthToken) {
     throw new Error('Authentication token is not set in environment variables');
   }
-  const response = await request.post('http://127.0.0.1:8000/api/customers/', {
+  const customerData = createCustomerData();
+  Object.assign(customerData, {
+    is_subscribed: true,
+    subscription_type: 'Annual Premium',
+    start_date: '2025-08-15',
+    end_date: '2026-08-15',
+    description: '1-year premium subscription with priority support'
+  });
 
+  console.log('Customer Data:', customerData);
+  const response = await request.post('http://127.0.0.1:8000/api/customers/', {
     headers: {
       'Authorization': apiAuthToken,
       'Content-Type': 'application/json'
     },
-    data: {
-      user_id: 16,
-      taxid: 'TAX-90001',
-      customertype: 'Corporate',
-      company: 'Tech Innovations Ltd',
-      firstname: 'Alice',
-      lastname: 'Rahman',
-      telephone: '01888888888',
-      mobile: '01799999999',
-      dateofbirth: '1992-07-12',
-      pob: 'Dhaka',
-      citizenship: 'Bangladeshi',
-      addressline1: 'House 15, Road 3',
-      addressline2: 'Block C',
-      city: 'Dhaka',
-      region: 'Dhaka',
-      postcode: '1216',
-      is_subscribed: true,
-      subscription_type: 'Annual Premium',
-      start_date: '2025-08-15',
-      end_date: '2026-08-15',
-      description: '1-year premium subscription with priority support'
-    }
+    data: customerData
   });
 
+  console.log(response);
   expect(response.ok()).toBeTruthy(); // status 2xx
   const body = await response.json();
   console.log('Created customer:', body);
