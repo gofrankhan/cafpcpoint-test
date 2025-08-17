@@ -1,18 +1,1 @@
-{
-    "customerData": {
-        "taxId": "5KGKLDRYPHRLG84X",
-        "customertype": "person",
-        "firstName": "Carson",
-        "lastName": "Prosacco",
-        "citizenship": "Equatorial Guinea",
-        "telephone": "+0287147345",
-        "mobile": "+8801350565984",
-        "region": "EG",
-        "city": "Levittown",
-        "postcode": "54342",
-        "addressLine1": "6840 Wood Street",
-        "addressLine2": "Apt. 328",
-        "dateOfBirth": "2000-04-20",
-        "cityOfBirth": "Hermanfield"
-    }
-}
+{"customerData":{"taxid":"7URPOUNLFPBV36MO","customertype":"person","firstname":"Ova","lastname":"Wehner","citizenship":"Mauritania","telephone":"+0237192614","mobile":"+8801727555501","region":"UZ","city":"East Eleazar","postcode":"14990-1332","addressline1":"35615 Harvey Lock","addressline2":"Apt. 192","dateofbirth":"2002-04-11","cityofbirth":"East Estefaniaworth"}}

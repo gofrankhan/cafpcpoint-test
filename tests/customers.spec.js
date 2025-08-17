@@ -43,7 +43,7 @@ test('Create a customer without subscriptions', async ({ page }) => {
 
   const toast = page.locator('.toast-message'); // Message with actual selector
   await expect(toast).toHaveText('Customer data added successfully');
-  await expect(page.locator('table tr:nth-of-type(1) td:nth-of-type(3)')).toHaveText(customerData.taxId);
+  await expect(page.locator('table tr:nth-of-type(1) td:nth-of-type(3)')).toHaveText(customerData.taxid);
 
   await page.waitForTimeout(3000);
 });
@@ -55,7 +55,7 @@ test('Create a customer without tax Id and check error message', async ({ page }
   await page.click('a.form-control.btn.btn-primary'); //click on "New" button
 
   const customerData = createCustomerData();
-  customerData.taxId = ''; // Set taxId to empty string to trigger validation error
+  customerData.taxid = ''; // Set taxId to empty string to trigger validation error
   console.log(customerData);
   saveCustomerData(customerData); // Save customer data to file
   await createCustomer(page, customerData);
@@ -90,7 +90,7 @@ test('delete a customer by tax id', async ({ page }) => {
   const customerData = createCustomerData();
   saveCustomerData(customerData); // Save customer data to file
   await createCustomer(page, customerData);
-  const taxId = getCustomerData().taxId; // Get the tax ID from the saved data
+  const taxId = getCustomerData().taxid; // Get the tax ID from the saved data
   await deleteCustomerByTaxId(page, taxId);
   await expect(page.locator(`text=${taxId}`)).not.toBeVisible();
 
@@ -98,24 +98,24 @@ test('delete a customer by tax id', async ({ page }) => {
 });
 
 
-test.only('create customer via API', async ({ request }) => {
+test('create customer via API', async ({ request }) => {
 
   if (!apiAuthToken) {
     throw new Error('Authentication token is not set in environment variables');
   }
   const customerData = createCustomerData();
-  Object.assign(customerData, {
-    is_subscribed: true,
-    subscription_type: 'Annual Premium',
-    start_date: '2025-08-15',
-    end_date: '2026-08-15',
-    description: '1-year premium subscription with priority support'
-  });
+  customerData.user_id = 16;
+  customerData.account_id = 1;
+  customerData.is_subscribed = true;
+  customerData.subscription_type = 'Annual Premium';
+  customerData.start_date = '2025-08-15';
+  customerData.end_date = '2026-08-15';
+  customerData.description = '1-year premium subscription with priority support';
 
   console.log('Customer Data:', customerData);
   const response = await request.post('http://127.0.0.1:8000/api/customers/', {
     headers: {
-      'Authorization': apiAuthToken,
+      'Authorization': 'Bearer ' + apiAuthToken,
       'Content-Type': 'application/json'
     },
     data: customerData
