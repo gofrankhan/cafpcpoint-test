@@ -73,7 +73,12 @@ module.exports = {
   use: {
     baseURL: 'http://127.0.0.1:8000',
     storageState: 'storageState.json', // logged-in state reused for all tests
-    headless: false
+    headless: false,
+    launchOptions: {
+      slowMo: 500, // every action slowed by 300ms
+    }
   }
 };
+
+
 

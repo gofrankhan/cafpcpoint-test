@@ -2,7 +2,7 @@
 # Playwright\
 .env
 storageState.json
-/test-data/
+test-data/
 node_modules/
 /test-results/
 /playwright-report/

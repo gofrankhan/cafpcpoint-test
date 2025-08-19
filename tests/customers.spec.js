@@ -1,31 +1,10 @@
 // @ts-check
 require('dotenv').config();
 import { test, expect } from '@playwright/test';
-const { createCustomer, createCustomerData, deleteCustomerByTaxId } = require('../utils/customer_steps.js');
+const { createCustomer, createCustomerData, deleteCustomerByTaxId } = require('../steps/customer_steps.js');
 const { saveCustomerData, getCustomerData, } = require('../utils/dataStore');
 
-const username = process.env.TEST_USERNAME;
-const password = process.env.TEST_PASSWORD;
 const apiAuthToken = process.env.API_AUTH_TOKEN; // Ensure this is set in your .env file
-const base_url = process.env.TEST_URL;
-
-
-test('Login to the CAF PC POINT portal', async ({ page }) => {
-  if (!base_url || !username || !password) {
-    throw new Error('Missing BaseURL or USERNAME or PASSWORD in environment variables');
-  }
-  await page.goto(base_url);
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/CAF PC POINT/);
-
-  await page.getByPlaceholder('Username').fill(username);
-  await page.getByPlaceholder('Password').fill(password);
-  // Click the get started link.
-  await page.getByRole('button', { name: 'Log in' }).click();
-
-  // Expects page to have a heading with the name of Installation.
-  await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
-});
 
 test('Create a customer without subscriptions', async ({ page }) => {
   await page.goto('/dashboard');

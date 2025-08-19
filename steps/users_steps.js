@@ -21,4 +21,5 @@ exports.createUser = async (page, userData) => {
     await page.fill('#password', userData.password);
     await page.fill('#password_confirmation', userData.password);
     await page.fill('#new_shop', userData.shopname);
+    await page.getByRole('button', { name: 'Create' }).click();
 }
