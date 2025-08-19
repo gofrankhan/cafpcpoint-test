@@ -1,28 +1,25 @@
 // @ts-check
 require('dotenv').config();
 import { test, expect } from '@playwright/test';
-import { faker, es } from '@faker-js/faker';
 const { createCustomer, createCustomerData, deleteCustomerByTaxId } = require('../utils/customer_steps.js');
 const { saveCustomerData, getCustomerData, } = require('../utils/dataStore');
 
 const username = process.env.TEST_USERNAME;
 const password = process.env.TEST_PASSWORD;
 const apiAuthToken = process.env.API_AUTH_TOKEN; // Ensure this is set in your .env file
-const url = process.env.TEST_URL;
+const base_url = process.env.TEST_URL;
 
 
 test('Login to the CAF PC POINT portal', async ({ page }) => {
-  await page.goto('http://127.0.0.1:8000/');
-
+  if (!base_url || !username || !password) {
+    throw new Error('Missing BaseURL or USERNAME or PASSWORD in environment variables');
+  }
+  await page.goto(base_url);
   // Expect a title "to contain" a substring.
   await expect(page).toHaveTitle(/CAF PC POINT/);
 
-  if (!process.env.TEST_USERNAME || !process.env.TEST_PASSWORD) {
-    throw new Error('Missing TEST_USERNAME or TEST_PASSWORD in environment variables');
-  }
-
-  await page.getByPlaceholder('Username').fill(process.env.TEST_USERNAME);
-  await page.getByPlaceholder('Password').fill(process.env.TEST_PASSWORD);
+  await page.getByPlaceholder('Username').fill(username);
+  await page.getByPlaceholder('Password').fill(password);
   // Click the get started link.
   await page.getByRole('button', { name: 'Log in' }).click();
 
@@ -37,7 +34,7 @@ test('Create a customer without subscriptions', async ({ page }) => {
   await page.click('a.form-control.btn.btn-primary'); //click on "New" button
 
   const customerData = createCustomerData();
-  console.log(customerData);
+  // console.log(customerData);
   saveCustomerData(customerData); // Save customer data to file
   await createCustomer(page, customerData);
 
@@ -56,7 +53,7 @@ test('Create a customer without tax Id and check error message', async ({ page }
 
   const customerData = createCustomerData();
   customerData.taxid = ''; // Set taxId to empty string to trigger validation error
-  console.log(customerData);
+  // console.log(customerData);
   saveCustomerData(customerData); // Save customer data to file
   await createCustomer(page, customerData);
 
@@ -77,8 +74,6 @@ test('delete a customer from the top of the table', async ({ page }) => {
   const strTaxID = await page.locator('table tr:nth-of-type(1) td:nth-of-type(3)').innerText();
   // Accept confirmation dialog automatically
   page.on('dialog', async dialog => { await dialog.accept(); });
-
-  // Click the first row's delete button
   await page.locator('a.btn.btn-danger.btn-sm.edit[title="Delete"]').first().click();
   // Assert that the old TaxID is no longer visible in the table
   await expect(page.locator(`text=${strTaxID}`)).not.toBeVisible();
@@ -112,7 +107,7 @@ test('create customer via API', async ({ request }) => {
   customerData.end_date = '2026-08-15';
   customerData.description = '1-year premium subscription with priority support';
 
-  console.log('Customer Data:', customerData);
+  // console.log('Customer Data:', customerData);
   const response = await request.post('http://127.0.0.1:8000/api/customers/', {
     headers: {
       'Authorization': 'Bearer ' + apiAuthToken,
@@ -120,9 +115,7 @@ test('create customer via API', async ({ request }) => {
     },
     data: customerData
   });
-
-  console.log(response);
   expect(response.ok()).toBeTruthy(); // status 2xx
   const body = await response.json();
-  console.log('Created customer:', body);
+  // console.log('Created customer:', body);
 });
