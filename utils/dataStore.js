@@ -1,13 +1,23 @@
 const fs = require('fs');
 const path = require('path');
 
-const filePath = path.join(__dirname, '../test-data/customer.json');
+const filePathCustomer = path.join(__dirname, '../test-data/customer.json');
+const filePathUser = path.join(__dirname, '../test-data/user.json');
 
 exports.saveCustomerData = (customerData) => {
-    fs.writeFileSync(filePath, JSON.stringify({ customerData }));
+    fs.writeFileSync(filePathCustomer, JSON.stringify({ customerData }));
 };
 
 exports.getCustomerData = () => {
-    const data = JSON.parse(fs.readFileSync(filePath));
+    const data = JSON.parse(fs.readFileSync(filePathCustomer));
     return data.customerData;
+};
+
+exports.saveUserData = (userData) => {
+    fs.writeFileSync(filePathUser, JSON.stringify({ userData }));
+};
+
+exports.getUserData = () => {
+    const data = JSON.parse(fs.readFileSync(filePathUser));
+    return data.userData;
 };

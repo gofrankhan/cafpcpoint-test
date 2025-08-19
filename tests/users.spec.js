@@ -3,8 +3,9 @@ require('dotenv').config();
 import { test, expect } from '@playwright/test';
 
 const { createUser, createUserData } = require('../utils/users_steps.js');
+const { saveUserData, getUserData, } = require('../utils/dataStore');
 
-test('create a new user with admin privilage', async ({ page }) => {
+test('open a new user creation page', async ({ page }) => {
     await page.goto('/dashboard');
     await page.getByRole('button', { name: 'More' }).click();
     await page.locator('.dropdown-item', { hasText: 'Config Users' }).click();
@@ -13,5 +14,9 @@ test('create a new user with admin privilage', async ({ page }) => {
 });
 
 test.only('create a new user with admin privilage call methods', async ({ page }) => {
-    await createUser(page, createUserData());
+    const userData = createUserData();
+    await saveUserData(userData); // Save user data to file
+    await createUser(page, userData);
+    await page.getByRole('button', { name: 'Create' }).click();
+    await page.waitForTimeout(3000);
 });
