@@ -30,3 +30,8 @@ exports.logoutbyUserFullName = async (page, fullName) => {
     await page.getByRole('link', { name: 'Logout' }).click();
     await expect(page.getByRole('button', { name: 'Log In' })).toBeVisible();
 }
+
+exports.logoutUser = async (page) => {
+    await page.goto('/admin/logout/');
+    await expect(page.getByRole('button', { name: 'Log In' })).toBeVisible();
+}
