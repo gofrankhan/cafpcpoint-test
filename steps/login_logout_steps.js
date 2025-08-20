@@ -3,6 +3,7 @@ const { test, expect } = require('@playwright/test');
 
 const username = process.env.TEST_USERNAME;
 const password = process.env.TEST_PASSWORD;
+const fullName = process.env.TEST_FULL_NAME;
 const base_url = process.env.TEST_URL;
 
 exports.userLogin = (page, username, password) => {
@@ -16,3 +17,16 @@ exports.userLogin = (page, username, password) => {
         .then(() => page.getByRole('button', { name: 'Log in' }).click())
         .then(() => expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible());
 };
+
+
+exports.logoutbyUserFullName = async (page, fullName) => {
+
+    if (!fullName) {
+        throw new Error('TEST_FULL_NAME is not set in the environment variables');
+    }
+
+    await page.goto('/dashboard');
+    await page.getByRole('button', { name: fullName }).click();
+    await page.getByRole('link', { name: 'Logout' }).click();
+    await expect(page.getByRole('button', { name: 'Log In' })).toBeVisible();
+}
