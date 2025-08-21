@@ -13,7 +13,7 @@ test('open a new user creation page', async ({ page }) => {
 });
 
 test('create a new user with admin privilage call methods', async ({ page }) => {
-    const userData = createUserData();
+    const userData = createUserData('admin');
     await saveUserData(userData); // Save user data to file
     await createUser(page, userData);
 });

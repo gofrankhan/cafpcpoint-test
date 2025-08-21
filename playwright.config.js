@@ -28,7 +28,6 @@ export default defineConfig({
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     // baseURL: 'http://127.0.0.1:3000',
-    storageState: 'storageState.json', // logged-in state reused for all tests
     headless: false,
     launchOptions: {
       slowMo: 100, // every action slowed by 300ms
@@ -41,19 +40,32 @@ export default defineConfig({
   projects: [
     {
       name: 'super-admin',
-      use: { baseURL: 'http://127.0.0.1:8000' }
+      use: {
+        baseURL: 'http://127.0.0.1:8000',
+        storageState: 'storageState.json', // logged-in state reused for all tests
+      },
+
     },
     {
       name: 'admin',
-      use: { baseURL: 'http://127.0.0.1:8000' }
+      use: {
+        baseURL: 'http://127.0.0.1:8000',
+        storageState: 'storage/admin.json',
+      }
     },
     {
-      name: 'basic',
-      use: { baseURL: 'http://127.0.0.1:8000' }
+      name: 'user',
+      use: {
+        baseURL: 'http://127.0.0.1:8000',
+        storageState: 'storage/user.json',
+      }
     },
     {
       name: 'lawyer',
-      use: { baseURL: 'http://127.0.0.1:8000' }
+      use: {
+        baseURL: 'http://127.0.0.1:8000',
+        storageState: 'storage/lawyer.json',
+      }
     }
   ],
   /*projects: [

@@ -3,6 +3,7 @@
 .env
 storageState.json
 test-data/
+storage/
 node_modules/
 /test-results/
 /playwright-report/

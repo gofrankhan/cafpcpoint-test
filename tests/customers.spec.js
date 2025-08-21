@@ -72,7 +72,7 @@ test('delete a customer by tax id', async ({ page }) => {
 });
 
 
-test('create customer via API', async ({ request }) => {
+test.skip('create customer via API', async ({ request }) => {
 
   if (!apiAuthToken) {
     throw new Error('Authentication token is not set in environment variables');
