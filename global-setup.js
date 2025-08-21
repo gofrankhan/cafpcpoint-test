@@ -1,6 +1,7 @@
 require('dotenv').config();
-import { request } from '@playwright/test';
+import { request, chromium } from '@playwright/test';
 import { createUser, createUserData } from './steps/users_steps.js';
+import { userLogin } from './steps/login_logout_steps.js';
 
 async function globalSetup(config) {
     console.log('>>> Global setup is running...'); // debug line
@@ -14,32 +15,38 @@ async function globalSetup(config) {
 
     // Login as super-admin
     await requestContext.post('api/login', {
-        form: { username: process.env.TEST_USERNAME, password: process.env.TEST_USERNAME }
+        data: { username: process.env.TEST_USERNAME, password: process.env.TEST_USERNAME }
     });
 
-    // Create Admin user
-    await requestContext.post('/api/users', {
-        data: { user_type: 'admin', ...createUserData('admin') }
-    });
-    await requestContext.storageState({
-        path: 'storage/admin.json',
-    });
+    // Create Admin user\
+    const browserAdmin = await chromium.launch({ headless: false });
+    const userDataAdmin = createUserData('admin');
+    await requestContext.post('/api/users', { data: { user_type: 'admin', ...userDataAdmin } });
+    const contextAdmin = await browserAdmin.newContext();
+    const pageAdmin = await contextAdmin.newPage();
+    await userLogin(pageAdmin, userDataAdmin.username, userDataAdmin.password);
+    await contextAdmin.storageState({ path: `storage/admin.json` });
+    await browserAdmin.close();
 
     // Create Basic user
-    await requestContext.post('/api/users', {
-        data: { user_type: 'user', ...createUserData('user') }
-    });
-    await requestContext.storageState({
-        path: 'storage/user.json',
-    });
+    const browserUser = await chromium.launch({ headless: false });
+    const userDataUser = createUserData('user');
+    await requestContext.post('/api/users', { data: { user_type: 'user', ...userDataUser } });
+    const contextUser = await browserUser.newContext();
+    const pageUser = await contextUser.newPage();
+    await userLogin(pageUser, userDataUser.username, userDataUser.password);
+    await contextUser.storageState({ path: `storage/user.json` });
+    await browserUser.close();
 
     // Create Lawyer user
-    await requestContext.post('/api/users', {
-        data: { user_type: 'lawyer', ...createUserData('lawyer') }
-    });
-    await requestContext.storageState({
-        path: 'storage/lawyer.json',
-    });
+    const browserLawyer = await chromium.launch({ headless: false });
+    const userDataLawyer = createUserData('lawyer');
+    await requestContext.post('/api/users', { data: { user_type: 'lawyer', ...userDataLawyer } });
+    const contextLawyer = await browserLawyer.newContext();
+    const pageLawyer = await contextLawyer.newPage();
+    await userLogin(pageLawyer, userDataLawyer.username, userDataLawyer.password);
+    await contextLawyer.storageState({ path: `storage/lawyer.json` });
+    await browserLawyer.close();
 
     await requestContext.dispose();
 }

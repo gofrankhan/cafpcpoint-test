@@ -7,7 +7,7 @@ const { saveUserData, getUserData, } = require('../utils/dataStore');
 
 test('Login to the CAF PC POINT portal with new user', async ({ page }) => {
     await page.goto('/dashboard');
-    const userData = createUserData();
+    const userData = createUserData('admin');
     await saveUserData(userData); // Save user data to file
     await createUser(page, userData);
     await userLogin(page, userData.username, userData.password);
