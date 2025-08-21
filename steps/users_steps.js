@@ -4,11 +4,12 @@ exports.createUserData = () => {
     const userData = {
         name: faker.person.fullName(),  // Full name of the user
         email: faker.internet.email(),  // Email address
-        username: faker.internet.userName(),  // Username for login
+        username: faker.internet.username(),  // Username for login
         usertype: 'admin',
         password: faker.internet.password(8, false, /[a-zA-Z0-9!@#$%^&*()_+]/),  // Strong password
         shopname: faker.company.name(),  // Shop name
     }
+    console.log('>>> Create User Data is running...'); // debug line
     return userData;
 };
 

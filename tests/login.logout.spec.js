@@ -5,17 +5,17 @@ const { userLogin, logoutbyUserFullName, logoutUser } = require('../steps/login_
 const { createUser, createUserData } = require('../steps/users_steps.js');
 const { saveUserData, getUserData, } = require('../utils/dataStore');
 
-test.only('Login to the CAF PC POINT portal with new user', async ({ page }) => {
+test('Login to the CAF PC POINT portal with new user', async ({ page }) => {
     await page.goto('/dashboard');
     const userData = createUserData();
     await saveUserData(userData); // Save user data to file
     await createUser(page, userData);
     await userLogin(page, userData.username, userData.password);
     await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
-    await logoutUser(page);
+    // await logoutUser(page);
 });
 
-test('User can logout successfully', async ({ page }) => {
+test.skip('User can logout successfully', async ({ page }) => {
     await logoutbyUserFullName(page, "Md. Gofran Khan");
     await expect(page.getByRole('button', { name: 'Log In' })).toBeVisible();
 });

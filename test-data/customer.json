@@ -1,18 +1,1 @@
-{
-    "customerData": {
-        "taxid": "8G99SVZZQ62IILMC",
-        "customertype": "person",
-        "firstname": "Mary",
-        "lastname": "Gerlach",
-        "citizenship": "Cape Verde",
-        "telephone": "+0249406910",
-        "mobile": "+8801308244912",
-        "region": "SI",
-        "city": "Tonawanda",
-        "postcode": "12557-2435",
-        "addressline1": "4753 14th Street",
-        "addressline2": "Apt. 349",
-        "dateofbirth": "1974-03-03",
-        "cityofbirth": "Fritzberg"
-    }
-}
+{"customerData":{"taxid":"XRWTZ453UAY910P0","customertype":"person","firstname":"Tyrique","lastname":"Mann","citizenship":"Greenland","telephone":"+0204114969","mobile":"+8801990636123","region":"YT","city":"East Arne","postcode":"16961-9811","addressline1":"6147 Margaretta Camp","addressline2":"Suite 688","dateofbirth":"1962-08-06","cityofbirth":"Ivashire"}}
