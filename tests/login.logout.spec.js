@@ -6,6 +6,7 @@ const { createUser, createUserData } = require('../steps/users_steps.js');
 const { saveUserData, getUserData, } = require('../utils/dataStore');
 
 test('Login to the CAF PC POINT portal with new user', async ({ page }) => {
+    test.skip(test.info().project.name !== 'admin', 'Only valid for admin');
     await page.goto('/dashboard');
     const userData = createUserData('admin');
     await saveUserData(userData); // Save user data to file

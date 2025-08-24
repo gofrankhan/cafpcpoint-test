@@ -43,6 +43,7 @@ test('Create a customer without tax Id and check error message', async ({ page }
 });
 
 test('delete a customer from the top of the table', async ({ page }) => {
+  test.skip(test.info().project.name !== 'admin', 'Only valid for admin');
   await page.goto('/dashboard');
   await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
   await page.click('#btn_customer_simple');
@@ -61,6 +62,7 @@ test('delete a customer from the top of the table', async ({ page }) => {
 });
 
 test('delete a customer by tax id', async ({ page }) => {
+  test.skip(test.info().project.name !== 'admin', 'Only valid for admin');
   const customerData = createCustomerData();
   saveCustomerData(customerData); // Save customer data to file
   await createCustomer(page, customerData);

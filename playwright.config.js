@@ -51,6 +51,7 @@ export default defineConfig({
       use: {
         baseURL: 'http://127.0.0.1:8000',
         storageState: 'storage/admin.json',
+        test_data: 'test-data/admin.json',
       }
     },
     {
@@ -58,6 +59,7 @@ export default defineConfig({
       use: {
         baseURL: 'http://127.0.0.1:8000',
         storageState: 'storage/user.json',
+        test_data: 'test-data/user.json',
       }
     },
     {
@@ -65,6 +67,7 @@ export default defineConfig({
       use: {
         baseURL: 'http://127.0.0.1:8000',
         storageState: 'storage/lawyer.json',
+        test_data: 'test-data/lawyer.json',
       }
     }
   ],

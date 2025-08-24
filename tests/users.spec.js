@@ -6,6 +6,7 @@ const { createUser, createUserData } = require('../steps/users_steps.js');
 const { saveUserData, getUserData, } = require('../utils/dataStore');
 
 test('open a new user creation page', async ({ page }) => {
+    test.skip(test.info().project.name !== 'admin', 'Only valid for admin');
     await page.goto('/dashboard');
     await page.getByRole('button', { name: 'More' }).click();
     await page.locator('.dropdown-item', { hasText: 'Config Users' }).click();

@@ -1,6 +1,7 @@
 const { faker } = require('@faker-js/faker');
 const { request, chromium } = require('@playwright/test');
 const { userLogin } = require('./login_logout_steps.js');
+const { saveUserData } = require('../utils/dataStore.js');
 
 exports.createUserData = (usertype) => {
     const userData = {
@@ -54,5 +55,6 @@ exports.createUserAndSaveState = async (requestContext, userData) => {
     const page = await context.newPage();
     await userLogin(page, userData.username, userData.password);
     await context.storageState({ path: `storage/${userData.user_type}.json` });
+    await saveUserData(userData); // Save user data to file
     await browser.close();
 }
