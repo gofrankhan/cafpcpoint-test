@@ -1,4 +1,6 @@
 const { faker } = require('@faker-js/faker');
+const { request, chromium } = require('@playwright/test');
+const { userLogin } = require('./login_logout_steps.js');
 
 exports.createUserData = (usertype) => {
     const userData = {
@@ -41,4 +43,16 @@ exports.createUserAPI = async (requestContext, userData) => {
     }
 
     return await response.json();
-}     
+}
+
+
+exports.createUserAndSaveState = async (requestContext, userData) => {
+    // Create Admin/User/Lawyer user
+    const browser = await chromium.launch({ headless: false });
+    await requestContext.post('/api/users', { data: userData });
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    await userLogin(page, userData.username, userData.password);
+    await context.storageState({ path: `storage/${userData.user_type}.json` });
+    await browser.close();
+}

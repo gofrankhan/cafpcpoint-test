@@ -1,6 +1,6 @@
 require('dotenv').config();
 import { request, chromium } from '@playwright/test';
-import { createUser, createUserData } from './steps/users_steps.js';
+import { createUserAndSaveState, createUserData } from './steps/users_steps.js';
 import { userLogin } from './steps/login_logout_steps.js';
 
 async function globalSetup(config) {
@@ -19,34 +19,16 @@ async function globalSetup(config) {
     });
 
     // Create Admin user\
-    const browserAdmin = await chromium.launch({ headless: false });
     const userDataAdmin = createUserData('admin');
-    await requestContext.post('/api/users', { data: { user_type: 'admin', ...userDataAdmin } });
-    const contextAdmin = await browserAdmin.newContext();
-    const pageAdmin = await contextAdmin.newPage();
-    await userLogin(pageAdmin, userDataAdmin.username, userDataAdmin.password);
-    await contextAdmin.storageState({ path: `storage/admin.json` });
-    await browserAdmin.close();
+    await createUserAndSaveState(requestContext, userDataAdmin);
 
     // Create Basic user
-    const browserUser = await chromium.launch({ headless: false });
     const userDataUser = createUserData('user');
-    await requestContext.post('/api/users', { data: { user_type: 'user', ...userDataUser } });
-    const contextUser = await browserUser.newContext();
-    const pageUser = await contextUser.newPage();
-    await userLogin(pageUser, userDataUser.username, userDataUser.password);
-    await contextUser.storageState({ path: `storage/user.json` });
-    await browserUser.close();
+    await createUserAndSaveState(requestContext, userDataUser);
 
     // Create Lawyer user
-    const browserLawyer = await chromium.launch({ headless: false });
     const userDataLawyer = createUserData('lawyer');
-    await requestContext.post('/api/users', { data: { user_type: 'lawyer', ...userDataLawyer } });
-    const contextLawyer = await browserLawyer.newContext();
-    const pageLawyer = await contextLawyer.newPage();
-    await userLogin(pageLawyer, userDataLawyer.username, userDataLawyer.password);
-    await contextLawyer.storageState({ path: `storage/lawyer.json` });
-    await browserLawyer.close();
+    await createUserAndSaveState(requestContext, userDataLawyer);
 
     await requestContext.dispose();
 }
