@@ -24,6 +24,37 @@ test('Create a customer without subscriptions', async ({ page }) => {
   await page.waitForTimeout(3000);
 });
 
+test.only('View a customer details in view page', async ({ page }) => {
+  await page.goto('/dashboard');
+  // Expects page to have a heading with the name of Installation.
+  await page.click('#btn_customer_simple');
+  await page.click('a.form-control.btn.btn-primary'); //click on "New" button
+
+  const customerData = createCustomerData();
+  // console.log(customerData);
+  saveCustomerData(customerData); // Save customer data to file
+  await createCustomer(page, customerData);
+
+  const toast = page.locator('.toast-message'); // Message with actual selector
+  await expect(toast).toHaveText('Customer data added successfully');
+  await expect(page.locator('table tr:nth-of-type(1) td:nth-of-type(3)')).toHaveText(customerData.taxid);
+
+  // Find the row with the given Tax ID
+  const row = page.locator(`table tr:has(td:has-text("${customerData.taxid}"))`);
+
+  const [newPage] = await Promise.all([
+    page.waitForEvent('popup'),           // 👈 wait for new tab
+    page.click('a[title="Show"]'),        // 👈 click Show button
+  ]);
+
+  // Verify new tab URL matches expected pattern
+  await expect(newPage).toHaveURL(/\/customer\/show\/\d+/);
+  // Optional: also check something in the new tab, e.g., heading or taxid
+  await expect(newPage.getByRole('heading', { name: `Show Customer's Information` })).toBeVisible();
+
+  await page.waitForTimeout(3000);
+});
+
 test('Create a customer without tax Id and check error message', async ({ page }) => {
   await page.goto('/dashboard');
   // Expects page to have a heading with the name of Installation.

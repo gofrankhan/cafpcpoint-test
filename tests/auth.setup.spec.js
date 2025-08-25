@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 require('dotenv').config();
 
-test.skip('authenticate', async ({ page }) => {
+test('authenticate', async ({ page }) => {
     await page.goto('http://127.0.0.1:8000/');
 
     // Expect a title "to contain" a substring.
