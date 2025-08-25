@@ -24,7 +24,7 @@ test('Create a customer without subscriptions', async ({ page }) => {
   await page.waitForTimeout(3000);
 });
 
-test.only('View a customer details in view page', async ({ page }) => {
+test('View a customer details in view page', async ({ page }) => {
   await page.goto('/dashboard');
   // Expects page to have a heading with the name of Installation.
   await page.click('#btn_customer_simple');
@@ -51,6 +51,32 @@ test.only('View a customer details in view page', async ({ page }) => {
   await expect(newPage).toHaveURL(/\/customer\/show\/\d+/);
   // Optional: also check something in the new tab, e.g., heading or taxid
   await expect(newPage.getByRole('heading', { name: `Show Customer's Information` })).toBeVisible();
+
+  await page.waitForTimeout(3000);
+});
+
+test.only('Edit a customer details in edit page', async ({ page }) => {
+  await page.goto('/dashboard');
+  // Expects page to have a heading with the name of Installation.
+  await page.click('#btn_customer_simple');
+  await page.click('a.form-control.btn.btn-primary'); //click on "New" button
+
+  const customerData = createCustomerData();
+  // console.log(customerData);
+  saveCustomerData(customerData); // Save customer data to file
+  await createCustomer(page, customerData);
+
+  const toast = page.locator('.toast-message'); // Message with actual selector
+  await expect(toast).toHaveText('Customer data added successfully');
+  await expect(page.locator('table tr:nth-of-type(1) td:nth-of-type(3)')).toHaveText(customerData.taxid);
+
+  // Find the row with the given Tax ID
+  const row = page.locator(`table tr:has(td:has-text("${customerData.taxid}"))`);
+  await page.click('a.btn.btn-outline-secondary.btn-sm.edit[title="Delete"]'); //click Edit button,
+  // Verify new tab URL matches expected pattern
+  await expect(page).toHaveURL(/\/customer\/edit\/\d+/);
+  // Optional: also check something in the new tab, e.g., heading or taxid
+  await expect(page.getByRole('heading', { name: `Edit Customer Information` })).toBeVisible();
 
   await page.waitForTimeout(3000);
 });
