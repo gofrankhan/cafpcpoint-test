@@ -52,10 +52,41 @@ test('View a customer details in view page', async ({ page }) => {
   // Optional: also check something in the new tab, e.g., heading or taxid
   await expect(newPage.getByRole('heading', { name: `Show Customer's Information` })).toBeVisible();
 
+  // Locate the row containing "Tax ID"
+  const taxIdRow = newPage.locator('.row.mb-3', { hasText: 'Tax ID' });
+
+  // Get the value inside the div
+  const taxIdValue = await taxIdRow.locator('div.col-sm-10').innerText();
+
+  // Assert that it's not empty (or matches expected value)
+  await expect(taxIdRow.locator('div.col-sm-10')).toHaveText(/[A-Z0-9]+/);
+
+  // If you know expected taxid:
+  await expect(taxIdRow.locator('div.col-sm-10')).toHaveText(customerData.taxid);
+
   await page.waitForTimeout(3000);
 });
 
-test.only('Edit a customer details in edit page', async ({ page }) => {
+test.only('View customer page has edit and close buttons', async ({ page }) => {
+  await page.goto('/dashboard');
+  await page.click('#btn_customer_simple');
+  const customerData = getCustomerData()
+
+  // Find the row with the given Tax ID
+  const row = page.locator(`table tr:has(td:has-text("${customerData.taxid}"))`);
+  const [newPage] = await Promise.all([
+    page.waitForEvent('popup'),           // 👈 wait for new tab
+    page.click('a[title="Show"]'),        // 👈 click Show button
+  ]);
+
+  await expect(newPage.getByRole('heading', { name: `Show Customer's Information` })).toBeVisible();
+  await expect(newPage.locator('input[value="Edit"]')).toHaveText('Edit');
+  await expect(newPage.locator('input[value="Close"]')).toHaveText('Close');
+
+  await page.waitForTimeout(3000);
+});
+
+test('Edit a customer details in edit page', async ({ page }) => {
   await page.goto('/dashboard');
   // Expects page to have a heading with the name of Installation.
   await page.click('#btn_customer_simple');

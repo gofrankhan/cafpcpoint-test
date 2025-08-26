@@ -32,6 +32,26 @@ export default defineConfig({
     launchOptions: {
       slowMo: 100, // every action slowed by 300ms
     },
+
+    use: {
+      // Emulates `'prefers-colors-scheme'` media feature.
+      colorScheme: 'dark',
+
+      // Context geolocation.
+      geolocation: { longitude: 12.492507, latitude: 41.889938 },
+
+      // Emulates the user locale.
+      locale: 'en-GB',
+
+      // Grants specified permissions to the browser context.
+      permissions: ['geolocation'],
+
+      // Emulates the user timezone.
+      timezoneId: 'Europe/Paris',
+
+      // Viewport used for all pages in the context.
+      viewport: { width: 1280, height: 720 },
+    },
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
   },
