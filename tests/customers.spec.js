@@ -86,6 +86,28 @@ test.only('View customer page has edit and close buttons', async ({ page }) => {
   await page.waitForTimeout(3000);
 });
 
+test.only('Close button closes the customer view tab', async ({ page }) => {
+  await page.goto('/dashboard');
+  await page.click('#btn_customer_simple');
+  const customerData = getCustomerData()
+
+  // Find the row with the given Tax ID
+  const row = page.locator(`table tr:has(td:has-text("${customerData.taxid}"))`);
+  const [newPage] = await Promise.all([
+    page.waitForEvent('popup'),           // 👈 wait for new tab
+    page.click('a[title="Show"]'),        // 👈 click Show button
+  ]);
+
+  await Promise.all([
+    newPage.waitForEvent('close'),        // 👈 wait for the tab to close
+    newPage.click('input[value="Close"]') // 👈 click Close button
+  ]);
+  // Verify the new page is closed
+  await expect(newPage.isClosed()).toBeTruthy();
+  await page.waitForTimeout(3000);
+});
+
+
 test('Edit a customer details in edit page', async ({ page }) => {
   await page.goto('/dashboard');
   // Expects page to have a heading with the name of Installation.
