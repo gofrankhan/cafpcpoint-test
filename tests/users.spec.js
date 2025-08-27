@@ -14,15 +14,15 @@ test.skip('open a new user creation page', async ({ page }) => {
 });
 
 test.skip('create a new user with admin privilage call methods', async ({ page }) => {
-    const userData = createUserData('admin');
+    const userData = createUserData(); //default user type is 'admin'
     await saveUserData(userData); // Save user data to file
     await createUser(page, userData);
 });
 
-test('Admin user can edit user information', async ({ page }) => {
+test('Admin user go to user edit page by searching an user and clicking edit button of the user ', async ({ page }) => {
     test.skip(test.info().project.name !== 'super-admin', 'Only valid for admin');
     await page.goto('/dashboard');
-    const userData = createUserData('admin');
+    const userData = createUserData();  //default user type is 'admin'
     await saveUserData(userData); // Save user data to file
     await createUser(page, userData);
     await expect(page.getByRole('heading', { name: "User's Informations" })).toBeVisible();
@@ -35,5 +35,24 @@ test('Admin user can edit user information', async ({ page }) => {
     await expect(page.getByRole('heading', { name: `Update Client Information` })).toBeVisible();
     await expect(page.locator('input[value="Update"]')).toHaveText('Update');
 
+    // await logoutUser(page);
+});
+
+test('Admin user can update user information and validata update done', async ({ page }) => {
+    test.skip(test.info().project.name !== 'super-admin', 'Only valid for admin');
+    await page.goto('/dashboard');
+    const userData = createUserData(); // default user type is 'admin'
+    await saveUserData(userData); // Save user data to file
+    await createUser(page, userData);
+    await expect(page.getByRole('heading', { name: "User's Informations" })).toBeVisible();
+
+    await page.getByRole('button', { name: 'More' }).click();
+    await page.locator('.dropdown-item', { hasText: 'Config Users' }).click();
+    await page.locator('input[type="search"]').fill(userData.username);
+    await page.locator('a[title="Edit"]').click();
+    await expect(page.getByPlaceholder('Username')).toHaveValue(userData.username);
+    const userDataUpdate = createUserData({ password: userData.password, username: userData.username }); // keep same username and password
+    await page.fill('#name', userDataUpdate.name);
+    await page.selectOption('select[name="usertype"]', userDataUpdate.user_type);
     // await logoutUser(page);
 });

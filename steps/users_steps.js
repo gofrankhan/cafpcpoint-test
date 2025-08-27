@@ -3,17 +3,16 @@ const { request, chromium } = require('@playwright/test');
 const { userLogin } = require('./login_logout_steps.js');
 const { saveUserData } = require('../utils/dataStore.js');
 
-exports.createUserData = (usertype) => {
-    const userData = {
-        name: faker.person.fullName(),  // Full name of the user
-        email: faker.internet.email(),  // Email address
-        username: faker.internet.username(),  // Username for login
-        user_type: usertype,
-        password: faker.internet.password(8, false, /[a-zA-Z0-9!@#$%^&*()_+]/),  // Strong password
-        shop_name: faker.company.name(),  // Shop name
-    }
-    return userData;
-};
+exports.createUserData = (overrides = {}) => {
+    return {
+        name: overrides.name || faker.person.fullName(),
+        username: overrides.username || faker.internet.username(),
+        password: overrides.password || faker.internet.password(8, false, /[a-zA-Z0-9!@#$%^&*()_+]/),
+        user_type: overrides.user_type || 'admin',
+        shop_name: overrides.shopname || faker.company.name(),
+        email: overrides.email || faker.internet.email()
+    };
+}
 
 exports.createUser = async (page, userData) => {
     await page.goto('/client/new');
