@@ -38,7 +38,7 @@ test.skip('Admin user go to user edit page by searching an user and clicking edi
     // await logoutUser(page);
 });
 
-test('Admin user can update user information and validata update done', async ({ page }) => {
+test('Admin user can update user information and validate update done', async ({ page }) => {
     test.skip(test.info().project.name !== 'super-admin', 'Only valid for admin');
     await page.goto('/dashboard');
     const userData = createUserData(); // default user type is 'admin'
@@ -66,5 +66,24 @@ test('Admin user can update user information and validata update done', async ({
     await expect(page.locator('table').nth(0).locator('tr:nth-of-type(1) td:nth-of-type(4)')).toHaveText(userDataUpdate.username);
     await expect(page.locator('table').nth(0).locator('tr:nth-of-type(1) td:nth-of-type(5)')).toHaveText(userDataUpdate.email);
     await expect(page.locator('table').nth(0).locator('tr:nth-of-type(1) td:nth-of-type(6)')).toHaveText(userDataUpdate.shop_name);
+    // await logoutUser(page);
+});
+
+test.only('Admin user can delete a user', async ({ page }) => {
+    test.skip(test.info().project.name !== 'super-admin', 'Only valid for admin');
+    await page.goto('/dashboard');
+    const userData = createUserData(); // default user type is 'admin'
+    await saveUserData(userData); // Save user data to file
+    await createUser(page, userData);
+    await expect(page.getByRole('heading', { name: "User's Informations" })).toBeVisible();
+
+    await page.getByRole('button', { name: 'More' }).click();
+    await page.locator('.dropdown-item', { hasText: 'Config Users' }).click();
+    await page.locator('input[type="search"]').fill(userData.username);
+
+    page.on('dialog', async dialog => { await dialog.accept(); });
+    await page.locator('a[title="Delete"]').click();
+    await expect(page.locator(`text=${userData.username}`)).not.toBeVisible();
+
     // await logoutUser(page);
 });
