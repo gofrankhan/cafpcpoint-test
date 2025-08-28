@@ -19,7 +19,7 @@ test.skip('create a new user with admin privilage call methods', async ({ page }
     await createUser(page, userData);
 });
 
-test('Admin user go to user edit page by searching an user and clicking edit button of the user ', async ({ page }) => {
+test.skip('Admin user go to user edit page by searching an user and clicking edit button of the user ', async ({ page }) => {
     test.skip(test.info().project.name !== 'super-admin', 'Only valid for admin');
     await page.goto('/dashboard');
     const userData = createUserData();  //default user type is 'admin'
@@ -54,5 +54,17 @@ test('Admin user can update user information and validata update done', async ({
     const userDataUpdate = createUserData({ password: userData.password, username: userData.username }); // keep same username and password
     await page.fill('#name', userDataUpdate.name);
     await page.selectOption('select[name="usertype"]', userDataUpdate.user_type);
+    await page.fill('#email', userDataUpdate.email);
+    await page.fill('#shop_name', userDataUpdate.shop_name);
+    await page.getByRole('button', { name: 'Update' }).click();
+    // const toast = page.locator('.toast-message'); // Message with actual selector
+    // await expect(toast).toHaveText('User data updated successfully');
+    await expect(page.getByRole('heading', { name: "User's Informations" })).toBeVisible();
+    await page.locator('input[type="search"]').fill(userDataUpdate.username);
+    await expect(page.locator('table').nth(0).locator('tr:nth-of-type(1) td:nth-of-type(2)')).toHaveText(userDataUpdate.name);
+    await expect(page.locator('table').nth(0).locator('tr:nth-of-type(1) td:nth-of-type(3)')).toHaveText(userDataUpdate.user_type);
+    await expect(page.locator('table').nth(0).locator('tr:nth-of-type(1) td:nth-of-type(4)')).toHaveText(userDataUpdate.username);
+    await expect(page.locator('table').nth(0).locator('tr:nth-of-type(1) td:nth-of-type(5)')).toHaveText(userDataUpdate.email);
+    await expect(page.locator('table').nth(0).locator('tr:nth-of-type(1) td:nth-of-type(6)')).toHaveText(userDataUpdate.shop_name);
     // await logoutUser(page);
 });

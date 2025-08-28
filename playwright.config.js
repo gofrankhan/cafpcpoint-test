@@ -30,7 +30,7 @@ export default defineConfig({
     // baseURL: 'http://127.0.0.1:3000',
     headless: false,
     launchOptions: {
-      slowMo: 100, // every action slowed by 300ms
+      slowMo: 200, // every action slowed by 300ms
     },
 
     use: {

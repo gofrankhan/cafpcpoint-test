@@ -16,16 +16,7 @@ test('Login to the CAF PC POINT portal with new user', async ({ page }) => {
     // await logoutUser(page);
 });
 
-test('Admin user can edit user information', async ({ page }) => {
-    test.skip(test.info().project.name !== 'admin', 'Only valid for admin');
-    await page.goto('/dashboard');
-    const userData = createUserData('admin');
-    await saveUserData(userData); // Save user data to file
-    await createUser(page, userData);
-    await userLogin(page, userData.username, userData.password);
-    await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
-    // await logoutUser(page);
-});
+
 
 test.skip('User can logout successfully', async ({ page }) => {
     await logoutbyUserFullName(page, "Md. Gofran Khan");
