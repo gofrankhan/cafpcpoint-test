@@ -17,7 +17,6 @@ test('Login to the CAF PC POINT portal with new user', async ({ page }) => {
 });
 
 
-
 test.skip('User can logout successfully', async ({ page }) => {
     await logoutbyUserFullName(page, "Md. Gofran Khan");
     await expect(page.getByRole('button', { name: 'Log In' })).toBeVisible();
