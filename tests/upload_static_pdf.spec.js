@@ -10,7 +10,6 @@ test('Goto Static pdf upload page', async ({ page }) => {
     await expect(page.getByRole('heading', { name: "Static PDF Files Informations" })).toBeVisible();
 })
 
-
 test('Upload a Static pdf file', async ({ page }) => {
     await page.goto('/dashboard');
     await page.getByRole('button', { name: 'More' }).click();
@@ -25,4 +24,18 @@ test('Upload a Static pdf file', async ({ page }) => {
     await page.getByRole('button', { name: 'Upload File' }).click();
     const toast = page.locator('.toast-message');
     await expect(toast).toHaveText('New statif pdf file added successfully');
+})
+
+test('Delete teh Uploaded Static pdf file', async ({ page }) => {
+    await page.goto('/dashboard');
+    await page.getByRole('button', { name: 'More' }).click();
+    await page.locator('.dropdown-item', { hasText: 'Static PDF File' }).click();
+    await expect(page.getByRole('heading', { name: "Static PDF Files Informations" })).toBeVisible();
+    await page.waitForSelector('table');
+    const rowLocator = page.locator(`table tr:has-text("Sample PDF")`);
+    // Accept confirmation dialog automatically
+    page.on('dialog', async dialog => { await dialog.accept(); });
+    await rowLocator.locator('a.btn.btn-danger.btn-sm.edit[title="Delete"]').click();
+    await page.reload();
+    await expect(page.locator(`text="Sample PDF"`)).not.toBeVisible();
 })
