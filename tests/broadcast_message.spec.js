@@ -12,7 +12,7 @@ test.skip('Create a broadcast message', async ({ page }) => {
     await expect(page.locator('#message_card')).toHaveText('Broadcast Message Test');
 })
 
-test.skip('Delete a broadcast message', async ({ page }) => {
+test('Delete a broadcast message', async ({ page }) => {
     await page.goto('/dashboard');
     await page.getByRole('button', { name: 'More' }).click();
     await page.locator('.dropdown-item', { hasText: 'Settings' }).click();
