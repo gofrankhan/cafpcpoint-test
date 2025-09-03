@@ -19,5 +19,11 @@ test('Create a file with new customer and current user', async ({ page }) => {
     await page.selectOption('select[name="category"]', { index: 1 });
     await page.selectOption('select[name="service"]', { index: 1 });
     await page.locator('#taxid').fill(customerData.taxid);
+    await page.press('body', 'Tab');
+    await expect(page.locator('#customer_type')).toHaveValue(customerData.customertype); //1 means "Individual"
+    await expect(page.locator('#first_name')).toHaveValue(customerData.firstname);
+    await expect(page.locator('#last_name')).toHaveValue(customerData.lastname);
+    await expect(page.locator('#date_of_birth')).toHaveValue(customerData.dateofbirth);
+    await expect(page.locator('#telephone')).toHaveValue(customerData.telephone);
     await page.waitForTimeout(3000);
 });
